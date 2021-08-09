@@ -1,0 +1,61 @@
+app-id: org.camotics.CAMotics
+runtime: org.kde.Platform
+runtime-version: '5.15'
+sdk: org.kde.Sdk
+command: camotics
+finish-args:
+  - --socket=wayland
+  - --socket=x11
+  - --device=dri
+modules:
+  - name: scons
+    buildsystem: simple
+    build-commands:
+      - python3 setup.py install --prefix=${FLATPAK_DEST} --optimize=1
+    sources:
+      - type: archive
+        url: http://prdownloads.sourceforge.net/scons/scons-3.1.2.tar.gz
+        sha256: 7801f3f62f654528e272df780be10c0e9337e897650b62ddcee9f39fde13f8fb
+    cleanup:
+      - '*'
+  - name: python-six
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} six
+    sources:
+      - type: file
+        url: https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz
+        sha256: 70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9
+  - name: embedded-v8
+    buildsystem: simple
+    build-commands:
+      - sed -i '/^sudo /d' build.sh
+      - ./build.sh
+    post-install:
+      - cp -r . ${FLATPAK_DEST}/embedded-v8
+    sources:
+      - type: git
+        url: https://github.com/CauldronDevelopmentLLC/embedded-v8.git
+  - name: cbang
+    buildsystem: simple
+    build-options:
+      env:
+        V8_HOME: /app/embedded-v8
+    build-commands:
+      - scons -j  $FLATPAK_BUILDER_N_JOBS prefix=${FLATPAK_DEST} ccache=true
+      - scons -j  $FLATPAK_BUILDER_N_JOBS prefix=${FLATPAK_DEST} ccache=true install
+      - cp -r . ${FLATPAK_DEST}/cbang
+    sources:
+      - type: git
+        url: https://github.com/CauldronDevelopmentLLC/cbang.git
+  - name: camotics
+    buildsystem: simple
+    build-options:
+      env:
+        CBANG_HOME: /app/cbang
+        V8_HOME: /app/embedded-v8
+    build-commands:
+      - scons -j $FLATPAK_BUILDER_N_JOBS prefix=${FLATPAK_DEST} install_prefix=${FLATPAK_DEST} ccache=true install
+    sources:
+      - type: git
+        url: https://github.com/CauldronDevelopmentLLC/CAMotics.git
