@@ -46,8 +46,9 @@ modules:
       - scons -j  $FLATPAK_BUILDER_N_JOBS prefix=${FLATPAK_DEST} ccache=true install
       - cp -r . ${FLATPAK_DEST}/cbang
     sources:
-      - type: git
-        url: https://github.com/CauldronDevelopmentLLC/cbang.git
+      - type: archive
+        url: https://github.com/CauldronDevelopmentLLC/cbang/archive/refs/tags/1.6.1.tar.gz
+        sha256: c59f54cd15fc8aaea09aa6c4a9f69995ed7cbfe179a50a179a162e501516c8a5
   - name: camotics
     buildsystem: simple
     build-options:
