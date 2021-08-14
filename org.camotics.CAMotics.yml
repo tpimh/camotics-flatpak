@@ -58,5 +58,6 @@ modules:
     build-commands:
       - scons -j $FLATPAK_BUILDER_N_JOBS prefix=${FLATPAK_DEST} install_prefix=${FLATPAK_DEST} ccache=true install
     sources:
-      - type: git
-        url: https://github.com/CauldronDevelopmentLLC/CAMotics.git
+      - type: archive
+        url: https://github.com/CauldronDevelopmentLLC/CAMotics/archive/refs/tags/v1.2.2-rc1.tar.gz
+        sha256: c928d58c31b42eb970ed4022fac86c73a082c67b336eb4a83cd1100d4dee2e60
